@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Container } from "./styles";
 import { Button } from "../Button";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useAuth } from "../../hooks/useAuth";
 
 export function FormLogin() {
   const navigate = useNavigate();
@@ -18,27 +19,29 @@ export function FormLogin() {
     reset,
   } = useForm<InputTypes>();
 
-  const onSubmit: SubmitHandler<InputTypes> = (data) => {
-    console.log(data);
-    reset();
+  const { signIn, isLoading } = useAuth();
+
+  const onSubmit: SubmitHandler<InputTypes> = async ({ email, password }) => {
+    const isLogged = await signIn({ email, password });
+    if (isLogged) reset();
   };
 
   return (
     <Container>
-      <h1>Faça seu Login</h1>
+      <h2>Login</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <section>
           <label>
-            Email
+            Email:
             <input
               type="email"
-              placeholder="exemplo@gmail.com"
+              placeholder="example@email.com"
               {...register("email", {
                 required: "campo obrigatório!",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "endereço de email invalido!",
+                  message: "endereço de email inválido!",
                 },
               })}
             />
@@ -48,28 +51,24 @@ export function FormLogin() {
 
         <section>
           <label>
-            Senha
+            Password:
             <input
               type="password"
-              placeholder="Mínimo de 7 caracteres"
+              placeholder="Minimum 7 characters"
               {...register("password", {
                 required: "campo obrigatório!",
-                minLength: {
-                  value: 7,
-                  message: "A senha deve conter no mínimo de 7 caracteres",
-                },
               })}
             />
           </label>
           <span className="inputError">{errors.password?.message}</span>
         </section>
 
-        <Button title="Login" loading={false} />
+        <Button title="Login" loading={isLoading} />
       </form>
 
-      <span className="messageChangePage">Não tem uma conta? </span>
+      <span className="messageChangePage">Don't have an account? </span>
       <button className="buttonChangePage" onClick={() => navigate("/signup")}>
-        Registrar
+        Register
       </button>
     </Container>
   );

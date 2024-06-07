@@ -1,11 +1,23 @@
+import { Outlet } from "react-router-dom";
+import { Header } from "../../components/Header";
+import { SideBar } from "../../components/SideBar";
 import { Container } from "./styles";
+import { Footer } from "../../components/Footer";
 
- export function App() {
-  
+export function App() {
   return (
     <Container>
-      <h1>App</h1>
-    </Container>
-  )
-}
+      <Header />
 
+      <article>
+        <section className="sideBar">
+          <SideBar />
+        </section>
+
+        <Outlet />
+      </article>
+
+      <Footer />
+    </Container>
+  );
+}

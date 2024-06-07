@@ -2,10 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { Container } from "./styles";
 import { Button } from "../Button";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useAuth } from "../../hooks/useAuth";
 
 export function FormSignUp() {
-  const navigate = useNavigate();
-
   type InputTypes = {
     name: string;
     email: string;
@@ -19,14 +18,20 @@ export function FormSignUp() {
     reset,
   } = useForm<InputTypes>();
 
-  const onSubmit: SubmitHandler<InputTypes> = (data) => {
-    console.log(data);
-    reset();
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<InputTypes> = async (data) => {
+    const userCreated = await signUp(data);
+    if (userCreated) {
+      navigate("/");
+      reset();
+    }
   };
 
   return (
     <Container>
-      <h1>Crie sua Conta</h1>
+      <h2>Crie sua conta</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <section>
@@ -34,7 +39,7 @@ export function FormSignUp() {
             Nome:
             <input
               type="text"
-              placeholder="Digite seu nome"
+              placeholder="digite seu nome"
               {...register("name", {
                 required: "campo obrigatório!",
               })}
@@ -42,17 +47,18 @@ export function FormSignUp() {
           </label>
           <span className="inputError">{errors.name?.message}</span>
         </section>
+
         <section>
           <label>
             Email:
             <input
               type="email"
-              placeholder="exemplo@gmail.com"
+              placeholder="example@email.com"
               {...register("email", {
                 required: "campo obrigatório!",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "endereço de email invalido!",
+                  message: "endereço de email inválido!",
                 },
               })}
             />
@@ -65,7 +71,7 @@ export function FormSignUp() {
             Senha:
             <input
               type="password"
-              placeholder="Mínimo de 7 caracteres"
+              placeholder="Minimum 7 characters"
               {...register("password", {
                 required: "campo obrigatório!",
                 minLength: {
@@ -83,12 +89,12 @@ export function FormSignUp() {
           <span className="inputError">{errors.password?.message}</span>
         </section>
 
-        <Button title="Finalizar" loading={false} variant="secondary"/>
+        <Button title="Finalizar" loading={false} variant="secondary" />
       </form>
 
-      <span className="messageChangePage">já tem uma conta? </span>
+      <span className="messageChangePage">Já tem uma conta? </span>
       <button className="buttonChangePage" onClick={() => navigate("/")}>
-        Registrar
+        Login
       </button>
     </Container>
   );
