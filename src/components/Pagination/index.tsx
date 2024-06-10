@@ -35,7 +35,7 @@ export function Pagination({
       </div>
 
       <div className="pageNumbers">
-        <span>{totalPages ? page : "-"}</span>
+        <span>{page ? page : "-"}</span>
         <span> / </span>
         <span>{totalPages || "-"}</span>
       </div>

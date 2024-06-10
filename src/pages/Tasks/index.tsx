@@ -35,7 +35,7 @@ if(totalPages > 0 && page > totalPages) {
         </div>
       </div>
 
-      <div className="tasksComtainer">
+      <div className="tasksContainer">
         {data?.length == 0 ? (
           <p className="loading">Sem tarefas para mostrar</p>
         ) : (
