@@ -1,19 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../configs/api";
 import { useEffect, useState } from "react";
-import { TaskDataTypes } from "../components/TaskCard";
+import { TaskDataTypes } from "../@types/tasks";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { UserDataTypes } from "../@types/user";
 
 type FilterType = "all" | "completed" | "pending" | "late";
 
-export function useQueryTask() {
+export function useQueryTasks() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(10);
   const [filter, setFilter] = useState<FilterType>("all");
 
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const searchParams = useSearchParams();
 
   async function getTasks({ page = 1, limit = 10, filter = "all" }) {
@@ -31,32 +32,32 @@ export function useQueryTask() {
 
   async function changeTotalPages(filter = "all", limit: number) {
     const { data } = await API.get("/user");
+    const { tasksInfo } = data as UserDataTypes;
+
     let total;
     switch (filter) {
       case "all":
-        total = data.tasksInfo.total;
+        total = tasksInfo.total;
         break;
-
       case "completed":
-        total = data.tasksInfo.completed;
+        total = tasksInfo.completed;
         break;
-
       case "pending":
-        total = data.tasksInfo.pending;
+        total = tasksInfo.pending;
         break;
-
       case "late":
-        total = data.tasksInfo.late;
+        total = tasksInfo.late;
         break;
 
       default:
-        total = data.tasksInfo.all;
+        total = tasksInfo.total;
         break;
     }
-    const calcTotalPages = Math.ceil(total / limit);
 
+    const calcTotalPages = Math.ceil(total / limit);
     if (calcTotalPages != totalPages) setTotalPages(calcTotalPages);
   }
+
   function nextPage() {
     if (page < totalPages) {
       setPage((prevPage) => prevPage + 1);
@@ -98,7 +99,7 @@ export function useQueryTask() {
         setPage(totalPages);
         return;
       }
-      
+
       if (pageQuery < 1) {
         navigate(`?filter=${filterQuery}&page=1`);
         setPage(1);
@@ -112,9 +113,12 @@ export function useQueryTask() {
     queryFn: () => getTasks({ page, limit, filter }),
   });
 
+  const refetchQueryTask = async () => await query.refetch();
+
   return {
     ...query,
-    data: query?.data,
+    data: query.data,
+    refetchQueryTask,
     page,
     totalPages,
     nextPage,

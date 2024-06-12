@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
+import { Container } from "./style";
 import { Header } from "../../components/Header";
 import { SideBar } from "../../components/SideBar";
-import { Container } from "./styles";
 import { Footer } from "../../components/Footer";
 
 export function App() {
@@ -15,6 +15,7 @@ export function App() {
         </section>
 
         <Outlet />
+        {/* outlet is main pages */}
       </article>
 
       <Footer />

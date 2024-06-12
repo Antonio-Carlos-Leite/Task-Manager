@@ -1,4 +1,4 @@
-import { Container, CardStyleType } from "./styles";
+import { CardStyleType, Container } from "./style";
 
 type StatsCardTypes = {
   title: string;
@@ -12,17 +12,17 @@ type StatsCardTypes = {
 export function StatsCard({
   title,
   icon,
-  onClick,
   number,
   total,
   variant = "neutral",
+  onClick,
 }: StatsCardTypes) {
   const percentage = number && total ? (number / total) * 100 : null;
   return (
-    <Container onClick={onClick} variant={variant}>
+    <Container variant={variant} onClick={onClick}>
       <div>
         <h3>
-          {title} ({number && total && `${percentage && percentage.toFixed(2)}`})%
+          {title} {percentage && `(${percentage.toFixed(2)}%)`}
         </h3>
         <p>{number || "-"}</p>
       </div>

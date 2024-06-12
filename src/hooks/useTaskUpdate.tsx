@@ -1,25 +1,30 @@
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../configs/api";
-import { TaskDataTypes } from "../components/TaskCard";
+import { toast } from "react-toastify";
+import { TaskDataTypes } from "../@types/tasks";
 import { AxiosError } from "axios";
 
-async function updateTask(task: TaskDataTypes) {
-  const {id, title, description, date, status} = task;
-  return await API.put(`/task/${id}`, {title, description, date, status});
+async function updateTask(data: TaskDataTypes) {
+  const { id, title, description, date, status } = data;
+  return await API.put(`/task/${id}`, { title, description, date, status });
 }
 
-export function useTaskUpdate() {
+export const useTaskUpdate = () => {
   const mutate = useMutation({
     mutationFn: updateTask,
-    onSuccess: (res) => {
-      if (res.status == 200) {
-        alert("Tarefa atualizada com sucesso!");
+    onSuccess: (response) => {
+      if (response.status == 200) {
+        toast.dismiss();
+        toast.success("Tarefa atualizada com sucesso!");
       }
     },
-    onError: (error: AxiosError) => {
-      console.error(error);
-      alert("Erro ao tentar atualizar tarefa!");
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.dismiss();
+      toast.error(
+        error.response?.data?.message || "Erro inesperado ao atualizar tarefa!"
+      );
     },
   });
+
   return mutate;
-}
+};

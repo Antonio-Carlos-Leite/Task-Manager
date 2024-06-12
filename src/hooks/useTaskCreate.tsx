@@ -1,25 +1,28 @@
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../configs/api";
-import { TaskDataTypes } from "../components/TaskCard";
+import { toast } from "react-toastify";
 import { AxiosError } from "axios";
+import { TaskDataTypes } from "../@types/tasks";
 
-async function createTask(task: TaskDataTypes) {
-  const {title, description, date, status} = task;
-  return await API.post("/task", {title, description, date, status});
+async function createTask(data: TaskDataTypes) {
+  const { title, description, date, status } = data;
+  return await API.post("/task", { title, description, date, status });
 }
 
-export function useTaskCreate() {
+export const useTaskCreate = () => {
   const mutate = useMutation({
     mutationFn: createTask,
-    onSuccess: (res) => {
-      if (res.status == 201) {
-        alert("Tarefa criada com sucesso!");
+    onSuccess: (response) => {
+      if (response.status == 201) {
+        toast.dismiss();
+        toast.success("Tarefa criada com sucesso!");
       }
     },
-    onError: (error: AxiosError) => {
-      console.error(error);
-      alert("Erro ao tentar criar tarefa!");
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.dismiss();
+      toast.error(error.response?.data?.message || "Erro inesperado ao criar tarefa!");
     },
   });
+
   return mutate;
-}
+};

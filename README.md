@@ -41,6 +41,7 @@ $ npm run dev
 
 ```ini
 VITE_API=""
+VITE_STORAGE_USERID_KEY=""
 ```
 
 ## Links

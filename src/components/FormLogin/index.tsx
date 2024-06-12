@@ -1,47 +1,44 @@
-import { useNavigate } from "react-router-dom";
-import { Container } from "./styles";
-import { Button } from "../Button";
+import { Container } from "./style";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Button } from "../Button";
 import { useAuth } from "../../hooks/useAuth";
 
+type InputsTypes = {
+  email: string;
+  password: string;
+};
+
 export function FormLogin() {
-  const navigate = useNavigate();
-
-  type InputTypes = {
-    email: string;
-    password: string;
-  };
-
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<InputTypes>();
+  } = useForm<InputsTypes>();
 
   const { signIn, isLoading } = useAuth();
 
-  const onSubmit: SubmitHandler<InputTypes> = async ({ email, password }) => {
-    const isLogged = await signIn({ email, password });
-    if (isLogged) reset();
+  const onSubmit: SubmitHandler<InputsTypes> = async ({ email, password }) => {
+    const isUserLogged = await signIn({ email, password });
+    if (isUserLogged) {
+      reset();
+    }
   };
 
   return (
     <Container>
-      <h2>Login</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
         <section>
           <label>
             Email:
             <input
               type="email"
-              placeholder="example@email.com"
+              placeholder="exemplo@email.com"
               {...register("email", {
-                required: "campo obrigatório!",
+                required: "Campo obrigatório",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "endereço de email inválido!",
+                  message: "Endereço de e-mail inválido",
                 },
               })}
             />
@@ -51,25 +48,20 @@ export function FormLogin() {
 
         <section>
           <label>
-            Password:
+            Senha:
             <input
               type="password"
-              placeholder="Minimum 7 characters"
+              placeholder="digite sua senha"
               {...register("password", {
-                required: "campo obrigatório!",
+                required: "Campo obrigatório",
               })}
             />
           </label>
           <span className="inputError">{errors.password?.message}</span>
         </section>
 
-        <Button title="Login" loading={isLoading} />
+        <Button title={"Login"} loading={isLoading} />
       </form>
-
-      <span className="messageChangePage">Don't have an account? </span>
-      <button className="buttonChangePage" onClick={() => navigate("/signup")}>
-        Register
-      </button>
     </Container>
   );
 }
